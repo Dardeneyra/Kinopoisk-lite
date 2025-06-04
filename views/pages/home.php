@@ -1,10 +1,10 @@
-<!doctype html>
-<html lang="ru">
-<head>
-    <title>Document</title>
-    <link rel="stylesheet" href="\assets\css\app.css">
-</head>
-<body>
+<?php
+/**
+ * @var \App\Kernel\View\View $view
+ */
+?>
+
+
+<?php $view->component('start') ?>
 <h1>Home page</h1>
-</body>
-</html>
+<?php $view->component('end') ?>
