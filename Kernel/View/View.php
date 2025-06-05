@@ -2,6 +2,7 @@
 
 namespace App\Kernel\View;
 
+use App\Kernel\Auth\AuthInterface;
 use App\Kernel\Exceptions\ViewNotFoundException;
 use App\Kernel\Session\Session;
 use App\Kernel\Session\SessionInterface;
@@ -11,6 +12,7 @@ class View implements ViewInterface
 
     public function __construct(
         private SessionInterface $session,
+        private AuthInterface $auth,
     ){
     }
 
@@ -35,6 +37,9 @@ class View implements ViewInterface
             echo "Component $name not found";
             return;
         }
+
+        extract($this->defaultData());
+
         include $componentPath;
     }
 
@@ -43,6 +48,7 @@ class View implements ViewInterface
         return [
             'view'=>$this,
             'session'=>$this->session,
+            'auth'=>$this->auth,
         ];
     }
 }
