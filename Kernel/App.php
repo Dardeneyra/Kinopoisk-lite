@@ -4,7 +4,6 @@ namespace App\Kernel;
 
 use App\Kernel\Container\Container;
 
-
 class App
 {
     private Container $container;
@@ -13,6 +12,7 @@ class App
     {
         $this->container = new Container();
     }
+
     public function run(): void
     {
         $this->container

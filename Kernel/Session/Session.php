@@ -18,6 +18,7 @@ class Session implements SessionInterface
     {
         return $_SESSION[$key] ?? $default;
     }
+
     public function getFlash(string $key, $default = null)
     {
         $value = $this->get($key, $default);
@@ -40,5 +41,4 @@ class Session implements SessionInterface
     {
         session_destroy();
     }
-
 }

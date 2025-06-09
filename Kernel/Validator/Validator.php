@@ -5,6 +5,7 @@ namespace App\Kernel\Validator;
 class Validator implements ValidatorInterface
 {
     private array $errors = [];
+
     private array $data;
 
     public function validate(array $data, array $rules): bool
@@ -12,16 +13,19 @@ class Validator implements ValidatorInterface
         $this->errors = [];
         $this->data = $data;
 
-        foreach ($rules as $field => $fieldRules) {
-            foreach ($fieldRules as $rule) {
-                $ruleParts = explode(':', $rule);
-                $ruleName = $ruleParts[0];
-                $ruleValue = $ruleParts[1] ?? null;
+        foreach ($rules as $key => $rule) {
+            $rules = $rule;
 
-                $error = $this->validateRule($field, $ruleName, $ruleValue);
+            foreach ($rules as $rule) {
+                $rule = explode(':', $rule);
+
+                $ruleName = $rule[0];
+                $ruleValue = $rule[1] ?? null;
+
+                $error = $this->validateRule($key, $ruleName, $ruleValue);
 
                 if ($error) {
-                    $this->errors[$field][] = $error;
+                    $this->errors[$key][] = $error;
                 }
             }
         }
@@ -34,32 +38,34 @@ class Validator implements ValidatorInterface
         return $this->errors;
     }
 
-    private function validateRule(string $field, string $ruleName, string $ruleValue = null): string|false
+    private function validateRule(string $key, string $ruleName, string $ruleValue = null): string|false
     {
-        $value = $this->data[$field] ?? null;
+        $value = $this->data[$key];
 
         switch ($ruleName) {
             case 'required':
                 if (empty($value)) {
-                    return "Field $field is required";
+                    return "Field $key is required";
                 }
                 break;
-
             case 'min':
-                if (strlen((string)$value) < (int)$ruleValue) {
-                    return "Field $field must be at least {$ruleValue} characters long";
+                if (strlen($value) < $ruleValue) {
+                    return "Field $key must be at least $ruleValue characters long";
                 }
                 break;
-
             case 'max':
-                if (strlen((string)$value) > (int)$ruleValue) {
-                    return "Field $field must be at most {$ruleValue} characters long";
+                if (strlen($value) > $ruleValue) {
+                    return "Field $key must be at most $ruleValue characters long";
                 }
                 break;
-
             case 'email':
-                if (!filter_var($value, FILTER_VALIDATE_EMAIL)) {
-                    return "Field $field must be a valid email address";
+                if (! filter_var($value, FILTER_VALIDATE_EMAIL)) {
+                    return "Field $key must be a valid email address";
+                }
+                break;
+            case 'confirmed':
+                if ($value !== $this->data["{$key}_confirmation"]) {
+                    return "Field $key must be confirmed";
                 }
                 break;
         }

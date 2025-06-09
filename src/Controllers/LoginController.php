@@ -6,25 +6,29 @@ use App\Kernel\Controller\Controller;
 
 class LoginController extends Controller
 {
-public function index()
-{
-    $this->view('login');
-}
+    public function index(): void
+    {
+        $this->view(name: 'login', title: 'Вход');
+    }
 
-public function login()
-{
-$email = $this->request()->input('email');
-$password = $this->request()->input('password');
+    public function login()
+    {
+        $email = $this->request()->input('email');
+        $password = $this->request()->input('password');
 
-$this->auth()->attempt($email, $password);
+        if ($this->auth()->attempt($email, $password)) {
+            $this->redirect('/');
+        }
 
-$this->redirect('/home');
-}
+        $this->session()->set('error', 'Неверный логин или пароль');
 
-public function logout(): null
-{
-    $this->auth()->logout();
+        $this->redirect('/login');
+    }
 
-    return $this->redirect('/login');
-}
+    public function logout(): void
+    {
+        $this->auth()->logout();
+
+        $this->redirect('/login');
+    }
 }

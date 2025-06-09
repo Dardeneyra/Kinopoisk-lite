@@ -4,39 +4,37 @@ namespace App\Kernel\Controller;
 
 use App\Kernel\Auth\AuthInterface;
 use App\Kernel\Database\DatabaseInterface;
-use App\Kernel\Http\Redirect;
 use App\Kernel\Http\RedirectInterface;
-use App\Kernel\Http\Request;
 use App\Kernel\Http\RequestInterface;
-use App\Kernel\Session\Session;
 use App\Kernel\Session\SessionInterface;
+use App\Kernel\Storage\StorageInterface;
 use App\Kernel\View\View;
 use App\Kernel\View\ViewInterface;
 
 abstract class Controller
 {
-private ViewInterface  $view;
+    private ViewInterface $view;
 
-private RequestInterface $request;
+    private RequestInterface $request;
 
-private RedirectInterface $redirect;
+    private RedirectInterface $redirect;
 
-private SessionInterface $session;
+    private SessionInterface $session;
 
-private DatabaseInterface $database;
+    private DatabaseInterface $database;
 
-private AuthInterface $auth;
+    private AuthInterface $auth;
 
-public function view(string $name): void
-{
-    $this->view->page($name);
-}
+    private StorageInterface $storage;
 
-public function setView(View $view): void
+    public function view(string $name, array $data = [], string $title = ''): void
     {
+        $this->view->page($name, $data, $title);
+    }
 
-    $this->view = $view;
-
+    public function setView(View $view): void
+    {
+        $this->view = $view;
     }
 
     public function request(): RequestInterface
@@ -87,5 +85,15 @@ public function setView(View $view): void
     public function setAuth(AuthInterface $auth): void
     {
         $this->auth = $auth;
+    }
+
+    public function storage(): StorageInterface
+    {
+        return $this->storage;
+    }
+
+    public function setStorage(StorageInterface $storage): void
+    {
+        $this->storage = $storage;
     }
 }

@@ -8,25 +8,24 @@ use App\Kernel\Session\SessionInterface;
 
 class Auth implements AuthInterface
 {
-
     public function __construct(
         private DatabaseInterface $db,
         private SessionInterface $session,
         private ConfigInterface $config
-    ){
+    ) {
     }
 
-    public function attempt($username, $password): bool
+    public function attempt(string $username, string $password): bool
     {
         $user = $this->db->first($this->table(), [
             $this->username() => $username,
         ]);
 
-        if (!$user) {
+        if (! $user) {
             return false;
         }
 
-        if (!password_verify($password, $user[$this->password()])) {
+        if (! password_verify($password, $user[$this->password()])) {
             return false;
         }
 
@@ -39,9 +38,10 @@ class Auth implements AuthInterface
     {
         return $this->session->has($this->sessionField());
     }
+
     public function user(): ?User
     {
-        if (!$this->check()) {
+        if (! $this->check()) {
             return null;
         }
 
@@ -52,10 +52,12 @@ class Auth implements AuthInterface
         if ($user) {
             return new User(
                 $user['id'],
+                $user['name'],
                 $user[$this->username()],
                 $user[$this->password()],
             );
         }
+
         return null;
     }
 
@@ -66,21 +68,26 @@ class Auth implements AuthInterface
 
     public function table(): string
     {
-        return $this->config->get('auth.table','users');
+        return $this->config->get('auth.table', 'users');
     }
 
     public function username(): string
     {
-        return $this->config->get('auth.username','email');
+        return $this->config->get('auth.username', 'email');
     }
 
     public function password(): string
     {
-        return $this->config->get('auth.password','password');
+        return $this->config->get('auth.password', 'password');
     }
 
     public function sessionField(): string
     {
-        return $this->config->get('auth.session_field','user_id');
+        return $this->config->get('auth.session_field', 'user_id');
+    }
+
+    public function id(): ?int
+    {
+        return $this->session->get($this->sessionField());
     }
 }
